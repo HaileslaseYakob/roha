@@ -5,7 +5,7 @@ class ExpenseUpdate(models.Model):
     _inherit = 'hr.expense'
 
 
-    suspense_id = fields.Many2one('hr.suspense', string="Related Suspense", help="Training requesting department")
+    suspense_id = fields.Many2one('hr.suspense', string="Related Suspense")
 
 class SuspenseEntry(models.Model):
     _name = 'hr.suspense'

@@ -38,12 +38,12 @@
             <field name="arch" type="xml">
                 <form string="Suspense form.">
                         <header>
-                        <button string="Approve Training(Dept)" name="button_dept" states="draft" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Approve Training(HR)" name="button_hr" states="dept" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Confirm Training" name="button_confirm" states="hr" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Finish Training" name="button_done" states="confirm" type="object" class="oe_highlight" groups="base.group_user"/>
+                        <button string="Approve Suspense(Dept)" name="button_dept" states="draft" type="object" class="oe_highlight" groups="base.group_user"/>
+                        <button string="Approve Suspense(HR)" name="button_hr" states="dept" type="object" class="oe_highlight" groups="base.group_user"/>
+                        <button string="Confirm Suspense" name="button_confirm" states="hr" type="object" class="oe_highlight" groups="base.group_user"/>
+                        <button string="Finish Suspense" name="button_done" states="confirm" type="object" class="oe_highlight" groups="base.group_user"/>
                         <button string="Set To Draft" name="button_draft" states="cancel,done" type="object" groups="base.group_user"/>
-                        <button string="Cancel Training" name="button_cancel" states="draft,confirm" type="object" />
+                        <button string="Cancel Suspense" name="button_cancel" states="draft,confirm" type="object" />
                         <field name="state" widget="statusbar" statusbar_visible="draft,dept,hr,confirm,done"/>
                         </header>
                  <sheet>
@@ -62,10 +62,7 @@
                     <notebook>
                         <page string="Reconcilled expenses">
                             <field name="expense_id" >
-                                 <tree  editable="bottom">
-                                    <field name="name" />
-                                    <field name="total_amount" />
-                                </tree>
+
                             </field>
                         </page>
                     </notebook>

@@ -1,5 +1,10 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_hr_employee_family_employee","hr.employee.family_employee","model_hr_employee_family","base.group_user",1,0,0,0
+"access_hr_employee_family_employee","hr.employee.family_employee","model_hr_employee_family","base.group_user",1,1,1,1
 "access_hr_employee_family_manager","hr.employee.family_manager","model_hr_employee_family","hr.group_hr_manager",1,1,1,1
 "access_hr_employee_family_user","hr.employee.family_user","model_hr_employee_family","hr.group_hr_user",1,1,1,1
-access_hr_employee_relation,access_access_hr_employee_relation,model_hr_employee_relation,base.group_user,1,1,1,1
+access_hr_employee_relation,access_access_hr_employee_relation,hr_employee_updation.model_hr_employee_relation,base.group_user,1,1,1,1
+access_hr_employee_emergency,access_access_hr_employee_emergency,hr_employee_updation.model_hr_employee_emergency,base.group_user,1,1,1,1
+access_hr_employee_subcity,access_access_hr_employee_subcity,hr_employee_updation.model_hr_employee_subcity,base.group_user,1,1,1,1
+access_hr_employee_woreda,access_access_hr_employee_woreda,hr_employee_updation.model_hr_employee_woreda,base.group_user,1,1,1,1
+access_hr_employee_kebele,access_access_hr_employee_kebele,hr_employee_updation.model_hr_employee_kebele,base.group_user,1,1,1,1
+access_hr_suspense,access_access_hr_suspense,hr_employee_updation.model_hr_suspense,base.group_user,1,1,1,1
