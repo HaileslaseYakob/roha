@@ -13,7 +13,15 @@
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='personal_information']/group" position="after">
-                     <group name="emergency_contact_ids" colspan="6" string="Emergency Info. ">
+                     <group name="fam_ids" colspan="4" string="Dependant Details">
+                        <field name="fam_ids">
+                            <tree editable="bottom">
+                                <field name="member_name" required="1"/>
+                                <field name="birth_date"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="emergency_contact_ids" colspan="6" string="Emergency Info. ">
                         <field name="emergency_contact_ids">
                             <tree editable="bottom">
                                 <field name="contact_name" required="1"/>
@@ -25,14 +33,7 @@
                             </tree>
                         </field>
                     </group>
-                    <group name="fam_ids" colspan="4" string="Dependant Details">
-                        <field name="fam_ids">
-                            <tree editable="bottom">
-                                <field name="member_name" required="1"/>
-                                <field name="birth_date"/>
-                            </tree>
-                        </field>
-                    </group>
+
 
                 </xpath>
                  <field name="address_home_id" position="before">
