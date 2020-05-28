@@ -23,7 +23,7 @@ class SuspenseEntry(models.Model):
         ('confirm', 'Confirmed'), ('done', 'Done')],
         string='Status', default='draft', readonly=True, required=True, copy=False,
         help="If event is created, the status is 'Draft'. If event is confirmed for the particular dates the status is set to 'Confirmed'. If the event is over, the status is set to 'Done'. If event is cancelled the status is set to 'Cancelled'.")
-    expense_id = fields.One2many('hr.expense','suspense_id', string="Suspense")
+    expense_id = fields.One2many('hr.expense','suspense_id', string="Suspense",readonly=True)
 
     def button_draft(self):
         self.write({'state': 'draft'})
