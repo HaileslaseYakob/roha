@@ -105,7 +105,8 @@ class HrCustody(models.Model):
     # return date validation
     @api.constrains('return_date')
     def validate_return_date(self):
-        if self.return_date < self.date_request:
+       if self.return_date:
+         if self.return_date < self.date_request:
             raise Warning('Please Give Valid Return Date')
 
     name = fields.Char(string='Code', copy=False, help="Code")
@@ -125,7 +126,7 @@ class HrCustody(models.Model):
     custody_name = fields.Many2one('custody.property', string='Property', required=True, readonly=True,
                                    help="Property name",
                                    states={'draft': [('readonly', False)]})
-    return_date = fields.Date(string='Return Date', required=True, track_visibility='always', readonly=True,
+    return_date = fields.Date(string='Return Date', required=False, track_visibility='always', readonly=True,
                               help="Return date",
                               states={'draft': [('readonly', False)]})
     renew_date = fields.Date(string='Renewal Return Date', track_visibility='always',
