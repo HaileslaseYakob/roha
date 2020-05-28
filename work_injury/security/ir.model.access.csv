@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_work_injury,access_access_work_injury,work_injury.model_work_injury,base.group_user,1,1,1,1
+access_work_injury_clinic_report,access_access_work_injury_clinic_report,work_injury.model_work_injury_clinic_report,base.group_user,1,1,1,1
+access_work_injury_clinic,access_access_work_injury_clinic,work_injury.model_work_injury_clinic,base.group_user,1,1,1,1
