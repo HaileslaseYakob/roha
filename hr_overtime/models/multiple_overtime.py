@@ -61,8 +61,8 @@ class OvertimeMaster(models.Model):
 
             for i in rrule(DAILY, dtstart=startDate, until=endDate):
                 # print(i.strftime('%Y/%m/%d'), sep='\n')
-                time_delta = datetime.combine(date.today(), startDate.time()) - datetime.combine(date.today(),
-                                                                                                 endDate.time())
+                time_delta = datetime.combine(date.today(), endDate.time()) - datetime.combine(date.today(),
+                                                                                                 startDate.time())
                 total_seconds = time_delta.total_seconds()
                 hour = startDate.time().hour
                 minute = startDate.time().minute
