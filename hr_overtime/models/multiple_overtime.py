@@ -36,9 +36,28 @@ class OvertimeMaster(models.Model):
         list_overtime_detail.append((5, 0, 0))
         user_tz = self.env.context.get('tz') or self.env.user.tz
         local = pytz.timezone(user_tz)
+
+
         for re in self.overtime_summary:
             startDate = pytz.utc.localize(re.start_date).astimezone(local)
             endDate = pytz.utc.localize(re.end_date).astimezone(local)
+
+            rule_id = re.employee_id.overtime_rule_id.id
+            over_time_rule = self.env['hr.overtime.rules'].search(
+                [('id', '=', rule_id)])
+            weekdayspay = 0.0
+            weekendspay = 0.0
+            holidayspay = 0.0
+            for line in over_time_rule:
+                weekdayspay=line.weekdays_perminute
+                weekendspay = line.weekends_perminute
+                holidayspay = line.holiday_perminute
+
+            over_time_holidays = self.env['hr.overtime.holidays'].search(
+                [])
+            list_holidays=[]
+            for overtime_holiday in over_time_holidays:
+                list_holidays.append(overtime_holiday.holiday_date)
 
             for i in rrule(DAILY, dtstart=startDate, until=endDate):
                 # print(i.strftime('%Y/%m/%d'), sep='\n')
@@ -53,12 +72,18 @@ class OvertimeMaster(models.Model):
                 minute = endDate.time().minute
                 endingTime = float('%s.%s' % (hour, minute))
 
+                overtime_earned=0.0
+                if i.date() in list_holidays:
+                    overtime_earned=(total_seconds / 60) * holidayspay
+                else:
+                    overtime_earned=(total_seconds / 60) * weekdayspay
+
                 obje = {
                     'employee_id': re.employee_id.id,
                     'overtime_date': i.date(),
                     'starting_time': startingTime,
                     'ending_time': endingTime,
-                    'overtime_earned': total_seconds,
+                    'overtime_earned': overtime_earned,
                     'difference_min': total_seconds / 60}
                 list_overtime_detail.append((0, 0, obje))
         self.overtime_detail = list_overtime_detail
@@ -118,6 +143,7 @@ class OvertimeSummary(models.Model):
     _description = "Overtime Summary"
 
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
+    overtime_rule_id=fields.Many2one('hr.overtime.rules', related='employee_id.overtime_rule_id', string="Overtime", readonly=True)
     overtime_master_id = fields.Many2one('hr.overtime.master')
     start_date = fields.Datetime(string="Start Date", required=True)
     end_date = fields.Datetime(string="End Date", required=True)

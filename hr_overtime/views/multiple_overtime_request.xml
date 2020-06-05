@@ -78,7 +78,7 @@
                                     <field name="starting_time" string="Starting Time"/>
 									<field name="ending_time" string="Ending Time"/>
 									<field name="difference_min" string="Time in Min."/>
-									<field name="overtime_earned" string="Cost"/>
+									<field name="overtime_earned" string="Cost" sum="Grand Total"/>
                                 </tree>
                             </field>
                         </page>
