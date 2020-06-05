@@ -7,7 +7,7 @@
     'author': 'BlueHawk consulting',
     'company': 'Cybrosys Techno Solutions',
     'website': "https://www.openhrms.com",
-    'depends': ['base', 'hr', 'mail', 'hr_gamification', 'hr_contract','website_event','hr_expense'],
+    'depends': ['base', 'hr', 'mail', 'hr_gamification', 'hr_contract','hr_expense'],
     'data': [
         'security/ir.model.access.csv',
         'data/data.xml',

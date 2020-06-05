@@ -46,7 +46,10 @@
 
                 <field name="user_id" position="after">
                     <field name="joining_date"/>
+                    <field name="overtime_rule_id"/>
                 </field>
+
+
 
                  <field name="address_home_id" position="attributes">
                      <attribute name="invisible">1</attribute>

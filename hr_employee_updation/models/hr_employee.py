@@ -90,6 +90,7 @@ class HrEmployeeFEmergencyContact(models.Model):
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
+    overtime_rule_id=fields.Many2one('hr.overtime.rules',string="Overtime")
     personal_mobile = fields.Char(string='Mobile', related='address_home_id.mobile', store=True,
                   help="Personal mobile number of the employee")
     mothername = fields.Char(string='Mother Name')
@@ -97,6 +98,7 @@ class HrEmployee(models.Model):
     woreda = fields.Many2one('hr.employee.woreda', string="Woreda")
     kebele = fields.Many2one('hr.employee.kebele', string="Kebele")
     house_no=fields.Char(string="House No")
+
     joining_date = fields.Date(string='Joining Date', help="Employee joining date computed from the contract start date",compute='compute_joining', store=True)
     id_attachment_id = fields.Many2many('ir.attachment', 'id_attachment_rel', 'id_ref', 'attach_ref',
                                         string="Attachment", help='You can attach the copy of your Id')
