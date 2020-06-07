@@ -106,5 +106,43 @@
             </field>
         </record>
 
+        <record id="hr_job_inherit" model="ir.ui.view">
+        <field name="name">hr.job.form.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="before">
+
+                <label for="structure_type_id"/>
+                <div  class="o_row">
+                    <field name="structure_type_id"
+                        context="{'default_category': 'hr_recruitment', 'default_access_mode': 'token'}"/>
+
+                </div>
+                  <field name="wage" string="Salary"/>
+            </xpath>
+            <xpath expr="//field[@name='no_of_recruitment']" position="before">
+                <field name="scheduled_on_budget"/>
+                <field name="no_of_employee"/>
+                <field name="vaccant"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_job_tree_inherit" model="ir.ui.view">
+        <field name="name">hr.job.tree.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+        <field name="arch" type="xml">
+            <field name="no_of_hired_employee" position="attributes">
+                     <attribute name="invisible">1</attribute>
+            </field>
+            <xpath expr="//field[@name='no_of_employee']" position="before">
+                <field name="scheduled_on_budget"/>
+                <field name="vaccant"/>
+            </xpath>
+        </field>
+     </record>
     </data>
+
 </odoo>

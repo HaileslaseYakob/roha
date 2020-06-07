@@ -27,6 +27,7 @@ GENDER_SELECTION = [('male', 'Male'),
                     ('female', 'Female'),
                     ('other', 'Other')]
 
+
 class HrSubcity(models.Model):
     """Table for keep employee family information"""
 
@@ -43,7 +44,6 @@ class HrWoreda(models.Model):
     name = fields.Char(string='Woreda')
 
 
-
 class EmployeeRelationInfo(models.Model):
     """Table for keep employee family information"""
 
@@ -51,12 +51,14 @@ class EmployeeRelationInfo(models.Model):
 
     name = fields.Char(string="Relationship", help="Relationship with the employee")
 
-class HrKebele(models.Model):
-        """Table for keep employee family information"""
 
-        _name = 'hr.employee.kebele'
-        _description = 'Kebele'
-        name = fields.Char(string='Kebele')
+class HrKebele(models.Model):
+    """Table for keep employee family information"""
+
+    _name = 'hr.employee.kebele'
+    _description = 'Kebele'
+    name = fields.Char(string='Kebele')
+
 
 class HrEmployeeFamilyInfo(models.Model):
     """Table for keep employee family information"""
@@ -68,7 +70,6 @@ class HrEmployeeFamilyInfo(models.Model):
                                   invisible=1)
     member_name = fields.Char(string='Name')
     birth_date = fields.Date(string="DOB", tracking=True)
-
 
 
 class HrEmployeeFEmergencyContact(models.Model):
@@ -85,28 +86,32 @@ class HrEmployeeFEmergencyContact(models.Model):
     subcity = fields.Many2one('hr.employee.subcity', string="Subcity")
     woreda = fields.Many2one('hr.employee.woreda', string="Woreda")
     kebele = fields.Many2one('hr.employee.kebele', string="Kebele")
-    house_no=fields.Char(string="House No")
+    house_no = fields.Char(string="House No")
+
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    overtime_rule_id=fields.Many2one('hr.overtime.rules',string="Overtime")
+    overtime_rule_id = fields.Many2one('hr.overtime.rules', string="Overtime")
     personal_mobile = fields.Char(string='Mobile', related='address_home_id.mobile', store=True,
-                  help="Personal mobile number of the employee")
+                                  help="Personal mobile number of the employee")
     mothername = fields.Char(string='Mother Name')
     subcity = fields.Many2one('hr.employee.subcity', string="Subcity")
     woreda = fields.Many2one('hr.employee.woreda', string="Woreda")
     kebele = fields.Many2one('hr.employee.kebele', string="Kebele")
-    house_no=fields.Char(string="House No")
+    house_no = fields.Char(string="House No")
 
-    joining_date = fields.Date(string='Joining Date', help="Employee joining date computed from the contract start date",compute='compute_joining', store=True)
+    joining_date = fields.Date(string='Joining Date',
+                               help="Employee joining date computed from the contract start date",
+                               compute='compute_joining', store=True)
     id_attachment_id = fields.Many2many('ir.attachment', 'id_attachment_rel', 'id_ref', 'attach_ref',
                                         string="Attachment", help='You can attach the copy of your Id')
     passport_attachment_id = fields.Many2many('ir.attachment', 'passport_attachment_rel', 'passport_ref', 'attach_ref1',
                                               string="Attachment",
                                               help='You can attach the copy of Passport')
     fam_ids = fields.One2many('hr.employee.family', 'employee_id', string='Family', help='Family Information')
-    emergency_contact_ids = fields.One2many('hr.employee.emergency', 'employee_id', string='Emergency contact', help='Emergency contact info')
+    emergency_contact_ids = fields.One2many('hr.employee.emergency', 'employee_id', string='Emergency contact',
+                                            help='Emergency contact info')
 
     @api.depends('contract_id')
     def compute_joining(self):
@@ -132,4 +137,25 @@ class HrEmployee(models.Model):
             self.fam_ids = [(6, 0, 0)] + lines_info
 
 
+class HrEmployee(models.Model):
+    _inherit = 'hr.job'
 
+    no_of_recruitment = fields.Integer(string='Expected New', copy=False,
+        help='Number of new employees you expect to recruit.', default=1)
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    structure_type_id = fields.Many2one('hr.payroll.structure.type', string="Salary Structure Type")
+    wage = fields.Monetary('Wage', required=True, tracking=True, help="Employee's monthly gross wage.")
+    scheduled_on_budget = fields.Integer("Scheduled on Budget")
+
+    @api.depends('scheduled_on_budget','no_of_employee')
+    def _compute_vaccant(self):
+       for cur in self:
+            if not cur.scheduled_on_budget:
+                cur.scheduled_on_budget=0
+
+            vaccants = cur.scheduled_on_budget - cur.no_of_employee
+            if vaccants < 1:
+               vaccants=0
+            self.vaccant=vaccants
+
+    vaccant = fields.Integer("vaccant", compute='_compute_vaccant')
