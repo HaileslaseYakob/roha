@@ -44,7 +44,7 @@
             </xpath>
             <xpath expr="//field[@name='company_id']" position="before">
                 <field name="survey_id" invisible="1"/>
-                <field name="response_id" />
+                <field name="response_id" readonly="True"/>
                 <field name="quiz_score" />
             </xpath>
         </field>
