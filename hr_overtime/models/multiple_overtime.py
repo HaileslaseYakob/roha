@@ -22,10 +22,10 @@ class OvertimeRules(models.Model):
     _description = "Overtime rules"
 
     name = fields.Char("Overtime rule ref.")
-    holiday_perminute= fields.Integer(string="Holiday per minute")
-    weekends_perminute= fields.Integer(string="Weekends per minute")
-    weekdays_perminute= fields.Integer(string="Weekdays per minute")
-
+    holiday_rate= fields.Integer(string="Holidays Rate")
+    weekends_rate= fields.Integer(string="Weekends Rate")
+    weekdays_rate= fields.Integer(string="Weekdays Rate")
+    weekdays_night_rate= fields.Integer(string="Weekdays Night Rate")
 
 class OvertimeMaster(models.Model):
     _name = "hr.overtime.master"
@@ -49,9 +49,9 @@ class OvertimeMaster(models.Model):
             weekendspay = 0.0
             holidayspay = 0.0
             for line in over_time_rule:
-                weekdayspay=line.weekdays_perminute
-                weekendspay = line.weekends_perminute
-                holidayspay = line.holiday_perminute
+                weekdayspay=line.weekdays_rate
+                weekendspay = line.weekends_rate
+                holidayspay = line.holiday_rate
 
             over_time_holidays = self.env['hr.overtime.holidays'].search(
                 [])
