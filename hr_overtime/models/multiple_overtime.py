@@ -74,9 +74,9 @@ class OvertimeMaster(models.Model):
 
                 overtime_earned=0.0
                 if i.date() in list_holidays:
-                    overtime_earned=(total_seconds / 60) * holidayspay
+                    overtime_earned=(total_seconds / 3600) * holidayspay
                 else:
-                    overtime_earned=(total_seconds / 60) * weekdayspay
+                    overtime_earned=(total_seconds / 3600) * weekdayspay
 
                 obje = {
                     'employee_id': re.employee_id.id,
@@ -84,7 +84,12 @@ class OvertimeMaster(models.Model):
                     'starting_time': startingTime,
                     'ending_time': endingTime,
                     'overtime_earned': overtime_earned,
-                    'difference_min': total_seconds / 60}
+                    'difference_min': total_seconds / 3600,
+                    'actual_starting_time': startingTime,
+                    'actual_ending_time': endingTime,
+                    'actual_overtime_earned': overtime_earned,
+                    'actual_difference_min': total_seconds / 3600
+                }
                 list_overtime_detail.append((0, 0, obje))
         self.overtime_detail = list_overtime_detail
 
@@ -93,25 +98,37 @@ class OvertimeMaster(models.Model):
         if self.end_date < self.start_date:
             raise Warning(_('End Date must be after the Start Date!!'))
 
-    def confirm_action(self):
+    def dept_action(self):
 
-        self.write({'state': 'first_approve'})
-        return
-
-    def first_approve_action(self):
-        self.write({'state': 'hr_approve',
+        self.write({'state': 'dept_approve',
                     'dept_manager_id': self.env.user.id,
                     'dept_approve_date': fields.datetime.now()})
+
         return
 
-    def hr_approve_action(self):
-        self.write({'state': 'done',
+    def hr_action(self):
+        self.write({'state': 'hr_approve',
                     'hr_approve_by_id': self.env.user.id,
                     'hr_approve_date': fields.datetime.now()})
         return
 
+    def gm_action(self):
+        self.write({'state': 'gm_approve',
+                    'gm_approve_by_id': self.env.user.id,
+                    'gm_approve_date': fields.datetime.now()})
+        return
+
+
     def refuse_action(self):
         self.write({'state': 'refuse'})
+        return
+
+    def dep_actual_action(self):
+        self.write({'state': 'dep_approve'})
+        return
+
+    def hr_actual_action(self):
+        self.write({'state': 'done'})
         return
 
     name = fields.Char(string="Reference")
@@ -131,8 +148,9 @@ class OvertimeMaster(models.Model):
 
     include_in_payroll = fields.Boolean(string="Include In Payroll", default=True)
     notes = fields.Text(string="Notes")
-    state = fields.Selection([('new', 'New'), ('first_approve', 'Waiting For First Approve'),
-                              ('hr_approve', 'Waiting For Department Approve'),
+    state = fields.Selection([('new', 'New'), ('dept_approve', 'Dept. Approve'),
+                              ('hr_approve', 'HR Approve'),('gm_approve', 'GM Approve'),
+                              ('dep_approve', 'Dept Approve(Actual)'), ('hrs_approve', 'HR Approve(Actual)'),
                               ('done', 'Done'), ('refuse', 'Refuse')], string="State", default='new')
     overtime_detail = fields.One2many('hr.overtime.detail', 'overtime_master_id', string="Overtime Detail")
     overtime_summary = fields.One2many('hr.overtime.summary', 'overtime_master_id', string="Overtime summary")
@@ -169,3 +187,13 @@ class OvertimeDetail(models.Model):
     ending_time = fields.Float(string="Ending Time", required=True)
     difference_min = fields.Float(string="Difference", required=True)
     overtime_earned = fields.Float(string="Overtime Earned", required=True)
+
+    actual_starting_time = fields.Float(string="Actual Starting Time", required=True)
+    actual_ending_time = fields.Float(string="Actual Ending Time", required=True)
+    actual_difference_min = fields.Float(string="Actual Difference", required=True)
+    actual_overtime_earned = fields.Float(string="Actual Overtime Earned", required=True)
+
+    state = fields.Selection([('new', 'New'), ('dept_approve', 'Dept. Approve'),
+                              ('hr_approve', 'HR Approve'),('gm_approve', 'GM Approve'),
+                              ('dep_approve', 'Dept Approve(Actual)'), ('hrs_approve', 'HR Approve(Actual)'),
+                              ('done', 'Done'), ('refuse', 'Refuse')], related="overtime_master_id.state")

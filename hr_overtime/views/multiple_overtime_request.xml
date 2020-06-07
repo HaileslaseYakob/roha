@@ -23,22 +23,29 @@
 	   	<field name="arch" type="xml">
 	    <form string="Multiple Overtime Request">
 	    	<header>
-	    	 	<button name="confirm_action" string="Confirm"
-                    	type="object" states="new"/>
 
-                <button name="hr_approve_action" string="Dept Approve"
-                    	type="object" states="first_approve" />
+                <button name="dept_action" string="Dept Approve"
+                    	type="object" states="new" />
 
-                <button name="first_approve_action" string="HR Approve"
+                <button name="hr_action" string="HR Approve"
+                    	type="object" states="dept_approve" />
+
+				<button name="gm_action" string="GM Approve"
                     	type="object" states="hr_approve" />
 
+                <button name="dep_actual_action" string="Dept Actual Approve"
+                    	type="object" states="gm_approve" />
+
+				<button name="hr_actual_action" string="Dept Actual Approve"
+                    	type="object" states="dep_approve" />
+
                 <button name="refuse_action" string="Refuse"
-                    	type="object" states="first_approve,hr_approve"/>
+                    	type="object" states="dept_approve,hr_approve,new"/>
 
      			<button name="calculate_overtime" string="Calculate overtime "
 						type="object" groups="base.group_user" states="new"/>
 
-	    		<field name="state" widget="statusbar" statusbar_visible="new,first_approve,hr_approve,done"/>
+	    		<field name="state" widget="statusbar" statusbar_visible="new,dept_approve,hr_approve,gm_approve,dep_approve,hrs_approve"/>
 
 	    	</header>
 	    	<sheet>
@@ -79,6 +86,11 @@
 									<field name="ending_time" string="Ending Time"/>
 									<field name="difference_min" string="Time in Min."/>
 									<field name="overtime_earned" string="Cost" sum="Grand Total"/>
+									<field name="state" invisible="1"/>
+									<field name="starting_time" string="Starting Time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="ending_time" string="Ending Time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="difference_min" string="Time in Min." attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="overtime_earned" string="Cost" sum="Grand Total"  attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
                                 </tree>
                             </field>
                         </page>
