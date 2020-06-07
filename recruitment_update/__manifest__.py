@@ -6,7 +6,7 @@
     'category': 'Generic Modules/Human Resources',
     'author': 'BlueHawk consulting',
     'company': 'BlueHawk consulting',
-    'depends': ['base', 'hr', 'mail', 'hr_recruitment'],
+    'depends': ['base', 'hr', 'mail', 'hr_recruitment','hr_employee_updation'],
     'data': [
         'security/ir.model.access.csv',
         'views/recruit_update.xml',

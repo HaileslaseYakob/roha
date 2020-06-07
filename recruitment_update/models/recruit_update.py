@@ -9,7 +9,7 @@ from odoo import models, fields, api, _
 
 class RecruitUpdate(models.Model):
     _name = 'recruit.update'
-    _description = 'Employee suspense'
+    _description = 'Recruitment update'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     def _get_employee_domain(self):
@@ -22,6 +22,10 @@ class RecruitUpdate(models.Model):
 
     name = fields.Char(string='Reference')
     job_id = fields.Many2one('hr.job', string="Job Title")
+
+    scheduled = fields.Integer("Scheduled on Budget",related='job_id.scheduled_on_budget',readonly='true')
+    vaccants = fields.Integer("vaccant", related='job_id.vaccant',readonly='true')
+    no_of_recruitment=fields.Integer("Current Employees", related='job_id.no_of_recruitment',readonly='true')
     department_id = fields.Many2one('hr.department',
                                   domain=_get_employee_domain, default=lambda self: self.env.user.employee_id.department_id, string="Requesting Department")
     education = fields.Char(string='Education')
@@ -40,9 +44,9 @@ class RecruitUpdate(models.Model):
     state = fields.Selection([
         ('draft', 'Unconfirmed'), ('cancel', 'Cancelled'),
         ('dept', 'Dept. Approved'), ('hr', 'HR Approved'),
-        ('confirm', 'GM Confirmed'), ('done', 'Done')],
+        ('done', 'GM Confirmed')],
         string='Status', default='draft', readonly=True, required=True, copy=False,
-        help="If event is created, the status is 'Draft'. If event is confirmed for the particular dates the status is set to 'Confirmed'. If the event is over, the status is set to 'Done'. If event is cancelled the status is set to 'Cancelled'.")
+        help="Different appoval stages")
 
     def button_draft(self):
         self.write({'state': 'draft'})
@@ -61,8 +65,7 @@ class RecruitUpdate(models.Model):
     def button_hr(self):
         self.write({'state': 'hr'})
 
-    def button_confirm(self):
-        self.write({'state': 'confirm'})
+
 
 
 

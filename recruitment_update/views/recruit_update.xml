@@ -27,11 +27,10 @@
                         <header>
                         <button string="Approve Recruitment(Dept)" name="button_dept" states="draft" type="object" class="oe_highlight" groups="base.group_user"/>
                         <button string="Approve Recruitment(HR)" name="button_hr" states="dept" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Approve Recruitment" name="button_confirm" states="hr" type="object" class="oe_highlight" groups="base.group_user"/>
-                        <button string="Confirm Recruitment" name="button_done" states="confirm" type="object" class="oe_highlight" groups="base.group_user"/>
+                        <button string="Approve Recruitment(GM)" name="button_done" states="hr" type="object" class="oe_highlight" groups="base.group_user"/>
                         <button string="Set To Draft" name="button_draft" states="cancel,done" type="object" groups="base.group_user"/>
-                        <button string="Cancel Recruitment" name="button_cancel" states="draft,confirm" type="object" />
-                        <field name="state" widget="statusbar" statusbar_visible="draft,dept,hr,confirm,done"/>
+                        <button string="Cancel Recruitment" name="button_cancel" states="draft,dept,hr" type="object" />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,dept,hr,done"/>
                         </header>
                  <sheet>
                     <div class="oe_title">
@@ -42,13 +41,16 @@
                         <group>
                             <field name="department_id" />
                             <field name="job_id"/>
+                            <field name="scheduled"/>
+                            <field name="vaccants"/>
+                            <field name="no_of_recruitment" string="Active Recruitment"/>
                             <field name="education"/>
                             <field name="experience"/>
-                            <field name="date_required"/>
-                            <field name="no_employees"/>
                         </group>
 
                          <group>
+                            <field name="date_required"/>
+                            <field name="no_employees"/>
                             <field name="gender" />
                             <field name="age"/>
                             <field name="additional"/>
