@@ -156,6 +156,6 @@ class HrEmployee(models.Model):
             vaccants = cur.scheduled_on_budget - cur.no_of_employee
             if vaccants < 1:
                vaccants=0
-            self.vaccant=vaccants
+            cur.vaccant=vaccants
 
-    vaccant = fields.Integer("vaccant", compute='_compute_vaccant')
+    vaccant = fields.Integer("vaccant", compute='_compute_vaccant',store=True)
