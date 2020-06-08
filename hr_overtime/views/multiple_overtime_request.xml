@@ -81,15 +81,15 @@
                             <field name="overtime_detail" >
                                  <tree  editable="bottom">
                                     <field name="employee_id" />
-                                    <field name="overtime_date" string="Date"/>
-                                    <field name="starting_time" string="Starting Time"/>
-									<field name="ending_time" string="Ending Time"/>
-									<field name="difference_min" string="Time in Min."/>
+                                    <field name="overtime_date"  string="Date"/>
+                                    <field name="starting_time" widget="float_time" string="Starting Time"/>
+									<field name="ending_time" widget="float_time" string="Ending Time"/>
+									<field name="difference_min" widget="float_time" string="Time ."/>
 									<field name="overtime_earned" string="Cost" sum="Grand Total"/>
 									<field name="state" invisible="1"/>
-									<field name="starting_time" string="Starting Time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
-									<field name="ending_time" string="Ending Time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
-									<field name="difference_min" string="Time in Min." attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="starting_time" string="Starting Time" widget="float_time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="ending_time" string="Ending Time" widget="float_time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
+									<field name="difference_min" string="Time in Min." widget="float_time" attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
 									<field name="overtime_earned" string="Cost" sum="Grand Total"  attrs="{'readonly': [('state', 'not in', ['gm_approve', 'dep_approve'])]}"/>
                                 </tree>
                             </field>

@@ -22,10 +22,11 @@ class OvertimeRules(models.Model):
     _description = "Overtime rules"
 
     name = fields.Char("Overtime rule ref.")
-    holiday_rate= fields.Float(string="Holidays Rate")
-    weekends_rate= fields.Float(string="Weekends Rate")
-    weekdays_rate= fields.Float(string="Weekdays Rate")
-    weekdays_night_rate= fields.Float(string="Weekdays Night Rate")
+    holiday_rate = fields.Float(string="Holidays Rate")
+    weekends_rate = fields.Float(string="Weekends Rate")
+    weekdays_rate = fields.Float(string="Weekdays Rate")
+    weekdays_night_rate = fields.Float(string="Weekdays Night Rate")
+
 
 class OvertimeMaster(models.Model):
     _name = "hr.overtime.master"
@@ -34,9 +35,8 @@ class OvertimeMaster(models.Model):
     def calculate_overtime(self):
         list_overtime_detail = []
         list_overtime_detail.append((5, 0, 0))
-        user_tz = self.env.context.get('tz') or self.env.user.tz
+        user_tz = self.env.user.tz
         local = pytz.timezone(user_tz)
-
 
         for re in self.overtime_summary:
             startDate = pytz.utc.localize(re.start_date).astimezone(local)
@@ -45,24 +45,34 @@ class OvertimeMaster(models.Model):
             rule_id = re.employee_id.overtime_rule_id.id
             over_time_rule = self.env['hr.overtime.rules'].search(
                 [('id', '=', rule_id)])
+            contracts = self.env['hr.contract'].search(
+                [('employee_id', '=', re.employee_id.id)])
+            wagee = 0.0
+            for cont in contracts:
+                wagee = cont.wage
             weekdayspay = 0.0
+            weekdaysnightpay = 0.0
             weekendspay = 0.0
             holidayspay = 0.0
+            dailypay=0.0
+            if wagee:
+                dailypay=wagee/160
             for line in over_time_rule:
-                weekdayspay=line.weekdays_rate
+                weekdayspay = line.weekdays_rate
                 weekendspay = line.weekends_rate
                 holidayspay = line.holiday_rate
+                weekdaysnightpay = line.weekdays_night_rate
 
             over_time_holidays = self.env['hr.overtime.holidays'].search(
                 [])
-            list_holidays=[]
+            list_holidays = []
             for overtime_holiday in over_time_holidays:
                 list_holidays.append(overtime_holiday.holiday_date)
 
             for i in rrule(DAILY, dtstart=startDate, until=endDate):
                 # print(i.strftime('%Y/%m/%d'), sep='\n')
                 time_delta = datetime.combine(date.today(), endDate.time()) - datetime.combine(date.today(),
-                                                                                                 startDate.time())
+                                                                                               startDate.time())
                 total_seconds = time_delta.total_seconds()
                 hour = startDate.time().hour
                 minute = startDate.time().minute
@@ -72,11 +82,14 @@ class OvertimeMaster(models.Model):
                 minute = endDate.time().minute
                 endingTime = float('%s.%s' % (hour, minute))
 
-                overtime_earned=0.0
+                overtime_earned = 0.0
+                weekdayname = datetime.strftime(i.date(), '%A')
                 if i.date() in list_holidays:
-                    overtime_earned=(total_seconds / 3600) * holidayspay
+                    overtime_earned = (total_seconds / 3600) * holidayspay * dailypay
+                elif weekdayname.lower() == 'sunday':
+                    overtime_earned = (total_seconds / 3600) * weekendspay * dailypay
                 else:
-                    overtime_earned=(total_seconds / 3600) * weekdayspay
+                    overtime_earned = (total_seconds / 3600) * weekdayspay * dailypay
 
                 obje = {
                     'employee_id': re.employee_id.id,
@@ -118,7 +131,6 @@ class OvertimeMaster(models.Model):
                     'gm_approve_date': fields.datetime.now()})
         return
 
-
     def refuse_action(self):
         self.write({'state': 'refuse'})
         return
@@ -149,7 +161,7 @@ class OvertimeMaster(models.Model):
     include_in_payroll = fields.Boolean(string="Include In Payroll", default=True)
     notes = fields.Text(string="Notes")
     state = fields.Selection([('new', 'New'), ('dept_approve', 'Dept. Approve'),
-                              ('hr_approve', 'HR Approve'),('gm_approve', 'GM Approve'),
+                              ('hr_approve', 'HR Approve'), ('gm_approve', 'GM Approve'),
                               ('dep_approve', 'Dept Approve(Actual)'), ('hrs_approve', 'HR Approve(Actual)'),
                               ('done', 'Done'), ('refuse', 'Refuse')], string="State", default='new')
     overtime_detail = fields.One2many('hr.overtime.detail', 'overtime_master_id', string="Overtime Detail")
@@ -161,7 +173,8 @@ class OvertimeSummary(models.Model):
     _description = "Overtime Summary"
 
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-    overtime_rule_id=fields.Many2one('hr.overtime.rules', related='employee_id.overtime_rule_id', string="Overtime", readonly=True)
+    overtime_rule_id = fields.Many2one('hr.overtime.rules', related='employee_id.overtime_rule_id', string="Overtime",
+                                       readonly=True)
     overtime_master_id = fields.Many2one('hr.overtime.master')
     start_date = fields.Datetime(string="Start Date", required=True)
     end_date = fields.Datetime(string="End Date", required=True)
@@ -194,6 +207,6 @@ class OvertimeDetail(models.Model):
     actual_overtime_earned = fields.Float(string="Actual Overtime Earned", required=True)
 
     state = fields.Selection([('new', 'New'), ('dept_approve', 'Dept. Approve'),
-                              ('hr_approve', 'HR Approve'),('gm_approve', 'GM Approve'),
+                              ('hr_approve', 'HR Approve'), ('gm_approve', 'GM Approve'),
                               ('dep_approve', 'Dept Approve(Actual)'), ('hrs_approve', 'HR Approve(Actual)'),
                               ('done', 'Done'), ('refuse', 'Refuse')], related="overtime_master_id.state")
