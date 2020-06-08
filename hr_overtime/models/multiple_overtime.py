@@ -22,10 +22,10 @@ class OvertimeRules(models.Model):
     _description = "Overtime rules"
 
     name = fields.Char("Overtime rule ref.")
-    holiday_rate= fields.Integer(string="Holidays Rate")
-    weekends_rate= fields.Integer(string="Weekends Rate")
-    weekdays_rate= fields.Integer(string="Weekdays Rate")
-    weekdays_night_rate= fields.Integer(string="Weekdays Night Rate")
+    holiday_rate= fields.Float(string="Holidays Rate")
+    weekends_rate= fields.Float(string="Weekends Rate")
+    weekdays_rate= fields.Float(string="Weekdays Rate")
+    weekdays_night_rate= fields.Float(string="Weekdays Night Rate")
 
 class OvertimeMaster(models.Model):
     _name = "hr.overtime.master"
