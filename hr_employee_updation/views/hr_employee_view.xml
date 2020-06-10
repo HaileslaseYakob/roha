@@ -119,9 +119,9 @@
                         context="{'default_category': 'hr_recruitment', 'default_access_mode': 'token'}"/>
 
                 </div>
-                  <field name="wage" string="Salary"/>
+                  <field name="salary_grade_id" string="Salary grade"/>
             </xpath>
-            <xpath expr="//field[@name='no_of_recruitment']" position="before">
+            <xpath expr="//field[@name='address_id']" position="after">
                 <field name="scheduled_on_budget"/>
                 <field name="no_of_employee"/>
                 <field name="vaccant"/>
@@ -143,6 +143,74 @@
             </xpath>
         </field>
      </record>
+        
+        
+        
+        
+      <record id="hr_grade_tree_view" model="ir.ui.view">
+            <field name="name">hr.grade.tree</field>
+            <field name="model">hr.grade</field>
+            <field name="arch" type="xml">
+                <tree string="Salary Grade list" multi_edit="1">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="hr_grade_form_view" model="ir.ui.view">
+            <field name="name">hr.grade.form</field>
+            <field name="model">hr.grade</field>
+            <field name="arch" type="xml">
+                <form string="Salary Grade form.">
+
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <notebook>
+
+
+                        <page string="Salary Levels">
+                                 <field name="salary_grade_levels" >
+                                    <tree  editable="bottom">
+                                        <field name="name" />
+                                        <field name="wage" />
+                                     </tree>
+                                 </field>
+                        </page>
+
+
+
+                    </notebook>
+                </sheet>
+
+                </form>
+            </field>
+        </record>
+
+
+        <record id="hr_grade_action" model="ir.actions.act_window">
+            <field name="name">Salary Grade </field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.grade</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_id" eval="False"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new Salary Grade <br/>
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_hr_grade_grade" action="hr_grade_action" name="Salary Grade" parent="hr.menu_hr_root" sequence="5"
+                  groups="hr.group_hr_manager,hr.group_hr_user"/>
     </data>
 
 </odoo>

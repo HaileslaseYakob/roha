@@ -8,3 +8,5 @@ access_hr_employee_subcity,access_access_hr_employee_subcity,hr_employee_updatio
 access_hr_employee_woreda,access_access_hr_employee_woreda,hr_employee_updation.model_hr_employee_woreda,base.group_user,1,1,1,1
 access_hr_employee_kebele,access_access_hr_employee_kebele,hr_employee_updation.model_hr_employee_kebele,base.group_user,1,1,1,1
 access_hr_suspense,access_access_hr_suspense,hr_employee_updation.model_hr_suspense,base.group_user,1,1,1,1
+access_hr_grade,access_access_hr_grade,hr_employee_updation.model_hr_grade,base.group_user,1,1,1,1
+access_hr_grade_levels,access_access_hr_grade_levels,hr_employee_updation.model_hr_grade_levels,base.group_user,1,1,1,1

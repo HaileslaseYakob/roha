@@ -137,14 +137,34 @@ class HrEmployee(models.Model):
             self.fam_ids = [(6, 0, 0)] + lines_info
 
 
+class SalaryGrade(models.Model):
+    _name = "hr.grade"
+    _description = "Salary Grade"
+
+    name = fields.Char("Grade name")
+    salary_grade_levels=fields.One2many('hr.grade.levels','salary_grade_id',"Grade Levels")
+
+
+class SalaryGradeLevels(models.Model):
+    _name = "hr.grade.levels"
+    _description = "Grade levels"
+
+    salary_grade_id = fields.Many2one('hr.grade', string='Grade')
+    company_id = fields.Many2one('res.company', string='Company', required=True,
+                                 default=lambda self: self.env.user.company_id)
+    name = fields.Char("Level name")
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    wage = fields.Monetary('Wage', required=True, tracking=True, help="Employee's monthly gross wage.")
+
+
 class HrEmployee(models.Model):
     _inherit = 'hr.job'
 
     no_of_recruitment = fields.Integer(string='Expected New', copy=False,
         help='Number of new employees you expect to recruit.', default=1)
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    salary_grade_id = fields.Many2one('hr.grade', string="Grade")
     structure_type_id = fields.Many2one('hr.payroll.structure.type', string="Salary Structure Type")
-    wage = fields.Monetary('Wage', required=True, tracking=True, help="Employee's monthly gross wage.")
     scheduled_on_budget = fields.Integer("Scheduled on Budget")
 
     @api.depends('scheduled_on_budget','no_of_employee')
