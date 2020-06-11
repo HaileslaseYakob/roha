@@ -12,9 +12,11 @@
                     <span> days</span>
                 </div>
             </xpath>
-            <xpath expr="//field[@name='wage_type']" position="before">
+            <xpath expr="//field[@name='wage']" position="before">
+               <div class="o_row">
                 <field name="salary_grade_id"/>
                 <field name="salary_level_id" options="{'no_create': True, 'no_create_edit':True}" />
+               </div>    
             </xpath>
         </field>
     </record>
