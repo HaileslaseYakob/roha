@@ -12,7 +12,7 @@ class Job(models.Model):
         help="Choose an Apparaisal form for this job position and you will be able to print/answer this to all applicants with this job position")
 
     probation_survey_id = fields.Many2one(
-        'survey.survey', "Appraisal Form",
+        'survey.survey', "Probation Form",
         domain=[('category', '=', 'hr_appraisal')],
         help="Choose an Apparaisal form for this job position and you will be able to print/answer this to all applicants with this job position")
 
