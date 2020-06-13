@@ -6,6 +6,7 @@
         <field name="inherit_id" ref="hr_appraisal.view_hr_appraisal_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_close']" position="after">
+                <field name="probation_appraisal"/>
                 <field name="survey_id" invisible="1"/>
                 <field name="response_id" invisible="1"/>
             </xpath>
@@ -38,12 +39,13 @@
                     attrs="{'invisible':[('survey_id','=',False)]}">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">Print</span>
-                        <span class="o_stat_text">Interview</span>
+                        <span class="o_stat_text">Appraisal</span>
                     </div>
                 </button>
             </xpath>
             <xpath expr="//field[@name='company_id']" position="before">
                 <field name="survey_id" invisible="1"/>
+                <field name="probation_appraisal"/>
                 <field name="response_id" readonly="True"/>
                 <field name="quiz_score" />
             </xpath>
