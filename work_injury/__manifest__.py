@@ -10,6 +10,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/work_injury.xml',
+        'views/employee_request.xml',
+        'views/canteen_views.xml',
     ],
     'demo': [],
     'images': ['static/description/banner.png'],

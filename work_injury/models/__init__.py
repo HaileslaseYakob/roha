@@ -22,6 +22,8 @@
 ###################################################################################
 
 from . import work_injury
+from . import canteen
+from . import employee_requests
 
 
 
