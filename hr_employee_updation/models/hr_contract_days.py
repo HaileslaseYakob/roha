@@ -31,5 +31,6 @@ class HrEmployeeContract(models.Model):
     structure_type_id = fields.Many2one('hr.payroll.structure.type', related='job_id.structure_type_id', readonly=False,
                                         string="Salary Structure Type")
     notice_days = fields.Integer(string="Notice Period", default=_get_default_notice_days)
+
     wage = fields.Monetary('Wage', compute="_compute_wage", readonly=True, required=True, store=True,
                            help="Employee's monthly gross wage.")
