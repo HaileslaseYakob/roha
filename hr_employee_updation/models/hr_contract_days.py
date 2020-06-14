@@ -32,5 +32,5 @@ class HrEmployeeContract(models.Model):
                                         string="Salary Structure Type")
     notice_days = fields.Integer(string="Notice Period", default=_get_default_notice_days)
 
-    wage = fields.Monetary('Wage', compute="_compute_wage", readonly=True, required=True, store=True,
+    wage = fields.Monetary('Wage', compute="_compute_wage",store=True,
                            help="Employee's monthly gross wage.")
