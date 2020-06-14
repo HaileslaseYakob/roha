@@ -14,6 +14,8 @@
             </xpath>
             <xpath expr="//field[@name='wage_type']" position="before">
                 <field name="salary_grade_id"/>
+            </xpath>
+            <xpath expr="//field[@name='wage_type']" position="after">
                 <field name="salary_level_id" options="{'no_create': True, 'no_create_edit':True}" />
             </xpath>
         </field>
