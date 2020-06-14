@@ -12,10 +12,8 @@
                     <span> days</span>
                 </div>
             </xpath>
-            <xpath expr="//field[@name='wage']" position="before">
-                <field name="salary_grade_id"/>
-            </xpath>
             <xpath expr="//field[@name='wage']" position="after">
+                <field name="salary_grade_id"/>
                 <field name="salary_level_id" />
             </xpath>
         </field>
