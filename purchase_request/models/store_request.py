@@ -38,11 +38,11 @@ class StoreRequest(models.Model):
         type_obj = self.env["stock.picking.type"]
         company_id = self.env.context.get("company_id") or self.env.company.id
         types = type_obj.search(
-            [("code", "=", "incoming"), ("warehouse_id.company_id", "=", company_id)]
+            [("sequence_code", "=", "SIV"), ("warehouse_id.company_id", "=", company_id)]
         )
         if not types:
             types = type_obj.search(
-                [("code", "=", "incoming"), ("warehouse_id", "=", False)]
+                [("sequence_code", "=", "SIV"), ("warehouse_id", "=", False)]
             )
         return types[:1]
 
