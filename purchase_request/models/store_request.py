@@ -67,10 +67,9 @@ class StoreRequest(models.Model):
         default=fields.Date.context_today,
         track_visibility="onchange",
     )
+    picking_count = fields.Integer(compute='_compute_picking', string='Picking count', default=0, store=True)
     picking_ids = fields.One2many(
-        "stock.picking",
-        "store_request_id"
-    )
+        "stock.picking","store_request_id",compute='_compute_picking', string='Issued SIV', copy=False,store=True )
     requested_by = fields.Many2one(
         comodel_name="res.users",
         string="Requested by",
@@ -107,12 +106,7 @@ class StoreRequest(models.Model):
         copy=True,
         track_visibility="onchange",
     )
-    product_id = fields.Many2one(
-        comodel_name="product.product",
-        related="line_ids.product_id",
-        string="Product",
-        readonly=True,
-    )
+
     state = fields.Selection(
         selection=_STATES,
         string="Status",
@@ -132,22 +126,21 @@ class StoreRequest(models.Model):
         required=True,
         default=_default_picking_type,
     )
-    group_id = fields.Many2one(
-        comodel_name="procurement.group", string="Procurement Group", copy=False
-    )
-    line_count = fields.Integer(
-        string="Purchase Request Line count",
-        compute="_compute_line_count",
-        readonly=True,
-    )
 
-    effective_date = fields.Date("Effective Date", compute='_compute_effective_date', store=True, help="Completion date of the first delivery order.")
-    expected_date = fields.Datetime()
-    delivery_count = fields.Integer(string='Delivery Orders', compute='_compute_picking_ids')
+    location_id = fields.Many2one('stock.location', 'Destination Location', required=True, check_company=True)
+    location_src_id = fields.Many2one('stock.location', 'Source Location', check_company=True)
     partner_shipping_id = fields.Many2one(
-        'res.partner', string='Delivery Address', readonly=True, required=True,
+        'res.partner', string='Delivered To: ', readonly=True, required=True,
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+
+
+
+    @api.onchange('picking_type_id')
+    def _onchange_picking_type(self):
+        self.location_src_id = self.picking_type_id.default_location_src_id.id
+        self.location_id = self.picking_type_id.default_location_dest_id.id
+
 
     @api.depends('picking_ids.date_done')
     def _compute_effective_date(self):
@@ -157,38 +150,7 @@ class StoreRequest(models.Model):
             order.effective_date = min(dates_list).date() if dates_list else False
 
 
-    @api.model
-    def create(self, vals):
-        if 'warehouse_id' not in vals and 'company_id' in vals and vals.get('company_id') != self.env.company.id:
-            vals['warehouse_id'] = self.env['stock.warehouse'].search([('company_id', '=', vals.get('company_id'))], limit=1).id
-        return super(StoreRequest, self).create(vals)
 
-    def write(self, values):
-        if values.get('order_line') and self.state == 'sale':
-            for order in self:
-                pre_order_line_qty = {order_line: order_line.product_uom_qty for order_line in order.mapped('order_line') if not order_line.is_expense}
-
-        if values.get('partner_shipping_id'):
-            new_partner = self.env['res.partner'].browse(values.get('partner_shipping_id'))
-            for record in self:
-                picking = record.mapped('picking_ids').filtered(lambda x: x.state not in ('done', 'cancel'))
-                addresses = (record.partner_shipping_id.display_name, new_partner.display_name)
-                message = _("""The delivery address has been changed on the Sales Order<br/>
-                        From <strong>"%s"</strong> To <strong>"%s"</strong>,
-                        You should probably update the partner on this document.""") % addresses
-                picking.activity_schedule('mail.mail_activity_data_warning', note=message, user_id=self.env.user.id)
-
-        res = super(StoreRequest, self).write(values)
-        if values.get('order_line') and self.state == 'sale':
-            for order in self:
-                to_log = {}
-                for order_line in order.order_line:
-                    if float_compare(order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0), order_line.product_uom.rounding) < 0:
-                        to_log[order_line] = (order_line.product_uom_qty, pre_order_line_qty.get(order_line, 0.0))
-                if to_log:
-                    documents = self.env['stock.picking']._log_activity_get_documents(to_log, 'move_ids', 'UP')
-                    order._log_decrease_ordered_quantity(documents)
-        return res
 
     def _action_confirm(self):
         self.order_line._action_launch_stock_rule()
@@ -197,34 +159,35 @@ class StoreRequest(models.Model):
     @api.depends('picking_ids')
     def _compute_picking_ids(self):
         for order in self:
-            order.delivery_count = len(order.picking_ids)
+            order.picking_count = len(order.picking_ids)
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
         if self.company_id:
             self.warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
 
-    @api.onchange('partner_shipping_id')
-    def _onchange_partner_shipping_id(self):
-        res = {}
-        pickings = self.picking_ids.filtered(
-            lambda p: p.state not in ['done', 'cancel'] and p.partner_id != self.partner_shipping_id
-        )
-        if pickings:
-            res['warning'] = {
-                'title': _('Warning!'),
-                'message': _(
-                    'Do not forget to change the partner on the following delivery orders: %s'
-                ) % (','.join(pickings.mapped('name')))
-            }
-        return res
 
 
-    @api.depends('picking_ids')
-    def _compute_picking_ids(self):
-        for order in self:
-            order.delivery_count = len(order.picking_ids)
-
+    def action_view_picking(self):
+        """ This function returns an action that display existing picking orders of given purchase order ids. When only one found, show the picking immediately.
+        """
+        action = self.env.ref('stock.action_picking_tree_all')
+        result = action.read()[0]
+        # override the context to get rid of the default filtering on operation type
+        result['context'] = {'default_picking_type_id': self.picking_type_id.id}
+        pick_ids = self.mapped('picking_ids')
+        # choose the view_mode accordingly
+        if not pick_ids or len(pick_ids) > 1:
+            result['domain'] = "[('id','in',%s)]" % (pick_ids.ids)
+        elif len(pick_ids) == 1:
+            res = self.env.ref('stock.view_picking_form', False)
+            form_view = [(res and res.id or False, 'form')]
+            if 'views' in result:
+                result['views'] = form_view + [(state,view) for state,view in result['views'] if view != 'form']
+            else:
+                result['views'] = form_view
+            result['res_id'] = pick_ids.id
+        return result
 
     @api.depends("line_ids")
     def _compute_line_count(self):
@@ -287,24 +250,26 @@ class StoreRequest(models.Model):
     def create_transfer(self):
         for re in self:
             picking = self.env['stock.picking'].create({
-                'location_id': 8,
-                'location_dest_id': 17,
+                'location_id': self.location_src_id.id,
+                'location_dest_id': self.location_id.id,
                 'partner_id': re.partner_shipping_id.id,
                 'picking_type_id': re.picking_type_id.id,
+                'store_request_id' : re.id,
                 'immediate_transfer': False,
             })
             for li in re.line_ids:
                 move_receipt_1 = self.env['stock.move'].create({
-                'name':'Haile 123',
+                'name':li.product_id.name,
                 'product_id': li.product_id.id,
                 'product_uom_qty': li.product_qty,
                 'product_uom': li.product_uom_id.id,
                 'picking_id': picking.id,
                 'picking_type_id': re.picking_type_id.id,
-                'location_id': 8,
-                'location_dest_id': 17,
+                'location_id': self.location_src_id.id,
+                'location_dest_id': self.location_id.id,
                 })
             picking.action_confirm()
+            return self.write({"state": "done"})
     def _can_be_deleted(self):
         self.ensure_one()
         return self.state == "draft"
