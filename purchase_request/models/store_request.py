@@ -54,12 +54,9 @@ class StoreRequest(models.Model):
             else:
                 rec.is_editable = True
 
-    name = fields.Char(
-        string="Store requisition Reference",
-        required=True,
-        default=_get_default_name,
-        track_visibility="onchange",
-    )
+    name = fields.Char(string='Order Reference', required=True, copy=False, readonly=True,
+                       states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
+
     origin = fields.Char(string="Source Document")
     date_start = fields.Date(
         string="Creation date",
@@ -67,6 +64,10 @@ class StoreRequest(models.Model):
         default=fields.Date.context_today,
         track_visibility="onchange",
     )
+    date_order = fields.Datetime(string='Order Date', required=True, readonly=True, index=True,
+                                 states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}, copy=False,
+                                 default=fields.Datetime.now)
+
     picking_count = fields.Integer(compute='_compute_picking', string='Picking count', default=0, store=True)
     picking_ids = fields.One2many(
         "stock.picking","store_request_id",compute='_compute_picking', string='Issued SIV', copy=False,store=True )
@@ -233,6 +234,16 @@ class StoreRequest(models.Model):
 
     @api.model
     def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            seq_date = None
+            if 'date_order' in vals:
+                seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_order']))
+            if 'company_id' in vals:
+                vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code(
+                    'store.request', sequence_date=seq_date) or _('New')
+            else:
+                vals['name'] = self.env['ir.sequence'].next_by_code('store.request', sequence_date=seq_date) or _('New')
+
         request = super(StoreRequest, self).create(vals)
         if vals.get("assigned_to"):
             partner_id = self._get_partner_id(request)

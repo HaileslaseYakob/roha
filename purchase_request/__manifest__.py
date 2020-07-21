@@ -15,6 +15,7 @@
         "security/ir.model.access.csv",
         "data/purchase_request_sequence.xml",
         "data/purchase_request_data.xml",
+        "data/ir_sequence_data.xml",
         "reports/report_purchase_request.xml",
         "wizard/purchase_request_line_make_purchase_order_view.xml",
 
