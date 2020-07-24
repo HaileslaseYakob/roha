@@ -96,7 +96,6 @@
         <menuitem action="cheque_payment_action"
             id="menu_cheque_payment_update_action"
             name="Cheque payment request"
-            parent="purchase.menu_procurement_management"
             sequence="1"/>      
         
         

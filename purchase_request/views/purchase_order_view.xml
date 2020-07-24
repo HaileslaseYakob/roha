@@ -8,13 +8,16 @@
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
 
+                <field name="partner_ref" position="after">
+                    <field name="proformaDate" />
+                </field>
                 <field name="currency_id" position="after">
-                               <field name="purchase_source_type" />
+                    <field name="purchase_source_type" />
                 </field>
                 <field name="date_order" position="after">
 
 
-                        <field name="deliveryplace" attrs="{'invisible': [('purchase_source_type', 'not in', ['foreign'])]}"/>
+                        <field name="deliveryplace" />
                         <field name="shippingby" attrs="{'invisible': [('purchase_source_type', 'not in', ['foreign'])]}"/>
                         <field name="packing" attrs="{'invisible': [('purchase_source_type', 'not in', ['foreign'])]}"/>
                         <field name="portofloading" attrs="{'invisible': [('purchase_source_type', 'not in', ['foreign'])]}"/>

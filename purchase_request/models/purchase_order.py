@@ -8,6 +8,7 @@ class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     deliveryplace = fields.Many2one('purchase.deliveryplace', string="Delivery place")
+    proformaDate = fields.Date(string="Proforma Date")
     shippingby = fields.Many2one('purchase.shippingby', string="Shipping by")
     packing = fields.Many2one('purchase.packing', string="Packing")
     portofloading = fields.Many2one('purchase.portofloading', string="Port loading")

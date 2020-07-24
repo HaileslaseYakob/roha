@@ -131,7 +131,7 @@ class StoreRequest(models.Model):
     location_id = fields.Many2one('stock.location', 'Destination Location', required=True, check_company=True)
     location_src_id = fields.Many2one('stock.location', 'Source Location', check_company=True)
     partner_shipping_id = fields.Many2one(
-        'res.partner', string='Delivered To: ', readonly=True, required=True,
+        'res.partner', string='Deliver To: ', readonly=True, required=True,
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)], 'sale': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
 

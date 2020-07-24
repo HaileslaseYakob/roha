@@ -14,6 +14,12 @@ access_purchase_request_line_stock_user,purchase.request.line.stock,model_purcha
 access_purchase_request_stock_user,purchase.request.stock,model_purchase_request,stock.group_stock_user,1,0,0,0
 access_purchase_request_purchase_user,purchase.request,model_purchase_request,purchase.group_purchase_user,1,0,0,0
 access_purchase_request_line_purchase_user,purchase.request.line,model_purchase_request_line,purchase.group_purchase_user,1,0,0,0
-access_purchase_deliveryplace,purchase.deliveryplace,model_purchase_deliveryplace,,1,1,1,1
+
+access_store_purchase_delivery_place_user,purchase.deliveryplace,model_purchase_deliveryplace,,1,1,1,1
+access_purchase_shippingby,purchase.shippingby,model_purchase_shippingby,,1,1,1,1
+access_purchase_packing,purchase.packing,model_purchase_packing,,1,1,1,1
+access_purchase_portofloading,purchase.portofloading,model_purchase_portofloading,,1,1,1,1
+access_purchase_portofdestination,purchase.portofdestination,model_purchase_portofdestination,,1,1,1,1
 access_store_request_store_user,store.request,model_store_request,,1,1,1,1
+access_purchase_chequepayment,purchase.chequepayment,model_purchase_chequepayment,,1,1,1,1
 access_store_request_line_store_user,store.request.line,model_store_request_line,,1,1,1,1
