@@ -29,6 +29,7 @@
         "views/purchase_request_view.xml",
         "views/purchase_request_line_view.xml",
         "views/purchase_request_report.xml",
+        "views/purchase_requisition_update.xml",
     ],
     "demo": ["demo/purchase_request_demo.xml"],
     "license": "LGPL-3",
