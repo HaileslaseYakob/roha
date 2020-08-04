@@ -28,6 +28,11 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         string="Purchase Order",
         domain=[("state", "=", "draft")],
     )
+    purchase_requisition_id = fields.Many2one(
+        comodel_name="purchase.agreement",
+        string="Purchase agreement",
+        domain=[("state", "=", "draft")],
+    )
     sync_data_planned = fields.Boolean(
         string="Merge on PO lines with equal Scheduled Date"
     )
@@ -118,12 +123,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return res
 
     @api.model
-    def _prepare_purchase_order(self, picking_type, group_id, company, origin):
+    def _prepare_purchase_order(self, callfortender, picking_type, group_id, company, origin):
         if not self.supplier_id:
             raise UserError(_("Enter a supplier."))
         supplier = self.supplier_id
         data = {
             "origin": origin,
+            "agreement_id": callfortender.id,
             "partner_id": self.supplier_id.id,
             "fiscal_position_id": supplier.property_account_position_id
             and supplier.property_account_position_id.id
@@ -131,6 +137,19 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             "picking_type_id": picking_type.id,
             "company_id": company.id,
             "group_id": group_id.id,
+        }
+        return data
+
+    @api.model
+    def _prepare_tender(self, picking_type, group_id, purchase_request_id, origin):
+        if not self.supplier_id:
+            raise UserError(_("Enter a supplier."))
+        supplier = self.supplier_id
+        data = {
+            "sh_source": origin,
+            "sh_agreement_type": 1,
+            "purchase_request_id": purchase_request_id,
+            "state":"draft",
         }
         return data
 
@@ -193,6 +212,34 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return vals
 
     @api.model
+    def _prepare_purchase_requisition_line(self, po, item):
+        if not item.product_id:
+            raise UserError(_("Please select a product for all lines"))
+        product = item.product_id
+
+        # Keep the standard product UOM for purchase order so we should
+        # convert the product quantity to this UOM
+        qty = item.product_uom_id._compute_quantity(
+            item.product_qty, product.uom_po_id or product.uom_id
+        )
+        # Suggest the supplier min qty as it's done in Odoo core
+        #min_qty = item.line_id._get_supplier_min_qty(product, po.vendor_id)
+        #qty = max(qty, min_qty)
+        date_required = item.line_id.date_required
+        vals = {
+            "agreement_id": po.id,
+            "sh_product_id": product.id,
+            "product_uom_id": product.uom_po_id.id or product.uom_id.id,
+            "sh_price_unit": 0.0,
+            "sh_qty": item.line_id.product_qty,
+            "schedule_date": datetime(
+                date_required.year, date_required.month, date_required.day
+            ),
+        }
+        #self._execute_purchase_line_onchange(vals)
+        return vals
+
+    @api.model
     def _get_purchase_line_name(self, order, line):
         product_lang = line.product_id.with_context(
             {"lang": self.supplier_id.lang, "partner_id": self.supplier_id.id}
@@ -231,9 +278,12 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def make_purchase_order(self):
         res = []
         purchase_obj = self.env["purchase.order"]
+        purchase_req = self.env["purchase.agreement"]
         po_line_obj = self.env["purchase.order.line"]
+        prequisition_line_obj = self.env["purchase.agreement.line"]
         pr_line_obj = self.env["purchase.request.line"]
         purchase = False
+        callforTender=False
 
         for item in self.item_ids:
             line = item.line_id
@@ -241,14 +291,28 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 raise UserError(_("Enter a positive quantity."))
             if self.purchase_order_id:
                 purchase = self.purchase_order_id
+
+            if self.purchase_requisition_id:
+                callforTender = self.purchase_requisition_id
+
+            if not callforTender:
+                tender_data = self._prepare_tender(
+                    line.request_id.picking_type_id,
+                    line.request_id.group_id,
+                    line.request_id.id,
+                    line.request_id.name,
+                )
+                callforTender = purchase_req.create(tender_data)
             if not purchase:
                 po_data = self._prepare_purchase_order(
+                    callforTender,
                     line.request_id.picking_type_id,
                     line.request_id.group_id,
                     line.company_id,
                     line.origin,
                 )
                 purchase = purchase_obj.create(po_data)
+
 
             # Look for any other PO line in the selected PO with same
             # product and UoM to sum quantities instead of creating a new
@@ -277,9 +341,11 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 self.create_allocation(po_line, line, all_qty, alloc_uom)
             else:
                 po_line_data = self._prepare_purchase_order_line(purchase, item)
+                preq_line_data = self._prepare_purchase_requisition_line(callforTender, item)
                 if item.keep_description:
                     po_line_data["name"] = item.name
                 po_line = po_line_obj.create(po_line_data)
+                preq_line =  prequisition_line_obj.create(preq_line_data)
                 po_line_product_uom_qty = po_line.product_uom._compute_quantity(
                     po_line.product_uom_qty, alloc_uom
                 )

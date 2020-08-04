@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 _STATES = [
     ("draft", "Draft"),
-    ("to_approve", "To be approved"),
+    ("to_approve", "C&B Apporval"),
     ("approved", "Approved"),
     ("rejected", "Rejected"),
     ("done", "Done"),
@@ -112,6 +112,9 @@ class PurchaseRequest(models.Model):
         string="Product",
         readonly=True,
     )
+
+    purchase_agreement_id=fields.One2many('purchase.agreement','purchase_request_id')
+
     state = fields.Selection(
         selection=_STATES,
         string="Status",

@@ -54,7 +54,7 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,to_approve,approved,done,rejected"
+                        statusbar_visible="draft,to_approve,approved,done"
                         statusbar_colors='{"approved":"blue"}'
                     />
                 </header>
@@ -79,7 +79,7 @@
                             <field
                                 name="purchase_count"
                                 widget="statinfo"
-                                string="Purchase Orders"
+                                string="RFQ's"
                             />
                         </button>
                         <button

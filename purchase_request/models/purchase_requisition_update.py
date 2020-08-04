@@ -38,7 +38,7 @@ class PurchasePortofdestination(models.Model):
 
 
 class PurchaseRequisition(models.Model):
-    _inherit = "purchase.requisition"
+    _inherit = "purchase.agreement"
 
     deliveryplace = fields.Many2one('purchase.deliveryplace', string="Delivery place")
     shippingby = fields.Many2one('purchase.shippingby', string="Shipping by")
