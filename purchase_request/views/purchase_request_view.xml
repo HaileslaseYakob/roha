@@ -118,6 +118,20 @@
                                 name="assigned_to"
                                 attrs="{'readonly': [('is_editable','=', False)]}"
                             />
+                          <field
+                                name="date_start"
+                                attrs="{'readonly': [('is_editable','=', False)]}"
+                            />
+                            <field
+                                name="picking_type_id"
+                                attrs="{'readonly': [('is_editable','=', False)]}"
+                            />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                                widget="selection"
+                                attrs="{'readonly': [('is_editable','=', False)]}"
+                            />
                         </group>
                         <group>
                             <field
@@ -134,22 +148,7 @@
                                 attrs="{'readonly': [('is_editable','=', False)]}"
                             />
                         </group>
-                        <group>
-                            <field
-                                name="date_start"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
-                            />
-                            <field
-                                name="picking_type_id"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
-                            />
-                            <field
-                                name="company_id"
-                                groups="base.group_multi_company"
-                                widget="selection"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
-                            />
-                        </group>
+                     
                     </group>
                     <notebook>
                         <page string="Products">
