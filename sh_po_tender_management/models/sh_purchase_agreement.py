@@ -42,7 +42,7 @@ class ShPurchaseAgreement(models.Model):
     def get_rfq_count(self):
         if self:
             for rec in self:
-                purchase_orders = self.env['purchase.order'].sudo().search([('agreement_id','=',rec.id),('state','in',['draft']),('selected_order','=',False)])
+                purchase_orders = self.env['purchase.order'].sudo().search([('agreement_id','=',rec.id),('selected_order','=',False)])
                 if purchase_orders:
                     rec.rfq_count = len(purchase_orders.ids)
                 else:
