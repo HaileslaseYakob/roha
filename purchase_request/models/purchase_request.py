@@ -149,13 +149,15 @@ class PurchaseRequest(models.Model):
         string="Purchases count", compute="_compute_purchase_count", readonly=True
     )
 
-    @api.depends("line_ids")
+
     def _compute_purchase_count(self):
-        self.purchase_count = len(self.mapped("line_ids.purchase_lines.order_id"))
+        for each in self:
+            custody_ids = self.env['purchase.order'].search([('purchase_request_id', '=', each.id)])
+            each.purchase_count = len(custody_ids)
 
     def action_view_purchase_order(self):
         action = self.env.ref("purchase.purchase_rfq").read()[0]
-        lines = self.mapped("line_ids.purchase_lines.order_id")
+        lines = self.mapped("line_ids.purchase_lines.order_id.purchase_request_id")
         if len(lines) > 1:
             action["domain"] = [("id", "in", lines.ids)]
         elif lines:
@@ -164,6 +166,10 @@ class PurchaseRequest(models.Model):
             ]
             action["res_id"] = lines.id
         return action
+
+
+
+
 
     @api.depends("line_ids")
     def _compute_move_count(self):

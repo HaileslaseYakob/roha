@@ -123,13 +123,14 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return res
 
     @api.model
-    def _prepare_purchase_order(self, callfortender, picking_type, group_id, company, origin):
+    def _prepare_purchase_order(self,purchase_request_id, callfortender, picking_type, group_id, company, origin):
         if not self.supplier_id:
             raise UserError(_("Enter a supplier."))
         supplier = self.supplier_id
         data = {
             "origin": origin,
             "agreement_id": callfortender.id,
+            "purchase_request_id": purchase_request_id,
             "partner_id": self.supplier_id.id,
             "fiscal_position_id": supplier.property_account_position_id
             and supplier.property_account_position_id.id
@@ -141,15 +142,14 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return data
 
     @api.model
-    def _prepare_tender(self, picking_type, group_id, purchase_request_id, origin):
-        if not self.supplier_id:
-            raise UserError(_("Enter a supplier."))
-        supplier = self.supplier_id
+    def _prepare_tender(self, purchase_request_id, origin):
+        seq = self.env['ir.sequence'].next_by_code('purchase.agreement')
         data = {
             "sh_source": origin,
             "sh_agreement_type": 1,
             "purchase_request_id": purchase_request_id,
-            "state":"draft",
+            "name":seq,
+            "state":"confirm",
         }
         return data
 
@@ -278,9 +278,11 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def make_purchase_order(self):
         res = []
         purchase_obj = self.env["purchase.order"]
-        purchase_req = self.env["purchase.agreement"]
         po_line_obj = self.env["purchase.order.line"]
+
+        purchase_req = self.env["purchase.agreement"]
         prequisition_line_obj = self.env["purchase.agreement.line"]
+
         pr_line_obj = self.env["purchase.request.line"]
         purchase = False
         callforTender=False
@@ -297,14 +299,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
             if not callforTender:
                 tender_data = self._prepare_tender(
-                    line.request_id.picking_type_id,
-                    line.request_id.group_id,
                     line.request_id.id,
                     line.request_id.name,
                 )
                 callforTender = purchase_req.create(tender_data)
             if not purchase:
                 po_data = self._prepare_purchase_order(
+                    line.request_id.id,
                     callforTender,
                     line.request_id.picking_type_id,
                     line.request_id.group_id,

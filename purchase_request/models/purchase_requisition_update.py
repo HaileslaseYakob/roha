@@ -34,7 +34,7 @@ class PurchasePortofdestination(models.Model):
 
     _name = 'purchase.portofdestination'
     _description = 'Port of destination'
-    name = fields.Char(string='Sub zone')
+    name = fields.Char(string='Port of Destination')
 
 
 class PurchaseRequisition(models.Model):
