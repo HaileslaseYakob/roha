@@ -7,17 +7,17 @@
 			<field name="arch" type="xml">
 				<form string="Purchase Tender">
 					<header>
-						<button name="action_confirm" string="Confirm" type="object" class="oe_highlight" groups="sh_po_tender_management.sh_purchase_tender_manager" attrs="{'invisible':[('state','in',['confirm','bid_selection','closed','cancel'])]}"/>
+						<button name="action_confirm" string="Confirm" type="object" class="oe_highlight" groups="sh_po_tender_management.sh_purchase_tender_manager" attrs="{'invisible':[('state','in',['confirm','bid_selection','closed','cancel','req_ver_dept','verified','gmapproved'])]}"/>
 						<button name="action_new_quotation" string="New Quotation" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','bid_selection','closed','req_ver_dept','verified','gmapproved','cancel'])]}"/>
 						<button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','bid_selection','req_ver_dept','verified','gmapproved','closed','cancel'])]}"/>
 						<button name="action_close" string="Close" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','confirm','closed','req_ver_dept','verified','gmapproved','cancel'])]}"/>
 						<button name="action_analyze_rfq" string="Analyze RFQ" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','confirm','closed','cancel'])]}"/>
 						<button name="action_req_ver_dept" string="Request verfication by Dept" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','confirm','req_ver_dept','verified','gmapproved','closed','cancel'])]}"/>
 						<button name="action_dept_verified" string="Approve(Dept)" type="object" class="oe_highlight" attrs="{'invisible':[('state','in',['draft','confirm','bid_selection','verified','gmapproved','closed','cancel'])]}"/>
-						<button name="action_gm_approved" string="GM Approve" type="object" attrs="{'invisible':[('state','in',['draft','confirm','bid_selection','req_ver_dept','gmapproved',])]}"/>
-						<button name="action_send_tender" string="Sent By Email" type="object" attrs="{'invisible':[('state','in',['draft','confirm','bid_selection','req_ver_dept','verified','gmapproved',])]}"/>
-						<button name="action_cancel" string="Cancel" type="object" class="btn btn-primary" attrs="{'invisible':[('state','in',['cancel'])]}"/>
-						<field name="state" widget="statusbar"/>
+						<button name="action_gm_approved" string="GM Approve" type="object" attrs="{'invisible':[('state','in',['draft','confirm','bid_selection','req_ver_dept','gmapproved','closed'])]}"/>
+						<button name="action_done" string="Done" type="object" attrs="{'invisible':[('state','in',['draft','confirm','bid_selection','req_ver_dept','verified','closed','cancel'])]}"/>
+						<button name="action_cancel" string="Cancel" type="object" class="btn btn-primary" attrs="{'invisible':[('state','in',['cancel','req_ver_dept','closed'])]}"/>
+						<field name="state" widget="statusbar" statusbar_visible="draft,confirm,bid_selection,req_ver_dept,verified,gmapproved"/>
 					</header>
 					<sheet>
 						<div class="oe_button_box" name="button_box">

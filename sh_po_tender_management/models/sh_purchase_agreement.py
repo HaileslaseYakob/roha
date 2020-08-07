@@ -91,7 +91,7 @@ class ShPurchaseAgreement(models.Model):
                     'res_model': 'purchase.order',
                     'view_type':'form',
                     'view_mode': 'form',
-                    'context':{'default_agreement_id':rec.id,'default_user_id':rec.sh_purchase_user_id.id,'default_order_line':line_ids},
+                    'context':{'default_agreement_id':rec.id,'default_purchase_request_id':rec.purchase_request_id.id,'default_user_id':rec.sh_purchase_user_id.id,'default_order_line':line_ids},
                     'target':'current'
                     }
 
@@ -99,6 +99,11 @@ class ShPurchaseAgreement(models.Model):
         if self:
             for rec in self:
                 rec.state='bid_selection'
+
+    def action_done(self):
+        if self:
+            for rec in self:
+                rec.state='closed'
 
     def action_analyze_rfq(self):
         list_id = self.env.ref('sh_po_tender_management.sh_bidline_tree_view').id
