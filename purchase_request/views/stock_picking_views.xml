@@ -19,7 +19,7 @@
                  <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,partially_available,assigned,done" />
              </xpath>
              <xpath expr="//button[@name='button_scrap']" position='after' >
-                 <button name="button_received" type="object" string="Received"  class="oe_highlight" attrs="{'invisible': ['|', ('picking_code', '!=', 'PC'), ('state', '!=', 'done')]}"/>
+                 <button name="button_received" type="object" string="Received"  class="oe_highlight" attrs="{'invisible': ['|', '&amp;', ('picking_code', '!=', 'PC'),('picking_code', '!=', 'SIV'), ('state', '!=', 'done')]}"/>
              </xpath>
              <xpath expr="//button[@name='button_scrap']" position='replace'>
                  <button name="button_scrap" type="object" string="Scrap" attrs="{'invisible': ['|', '|', '&amp;', ('picking_type_code', '=', 'incoming'), ('state', '!=', 'done'), '&amp;', ('picking_type_code', '=', 'outgoing'), ('state', '=', 'done'), ('is_locked', '=', False)]}"/>
