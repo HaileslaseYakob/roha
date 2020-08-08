@@ -43,7 +43,7 @@
                         <button string="Approve" name="button_approve" states="draft" type="object" class="oe_highlight" groups="base.group_user"/>
                         <button string="Verify" name="button_verify" states="approve" type="object" class="oe_highlight" groups="base.group_user"/>
                         <button string="Reject" name="button_reject" states="draft,approve" type="object" class="oe_highlight" groups="base.group_user"/>
-                          <field name="state" widget="statusbar" statusbar_visible="draft,approve,reject,verify"/>
+                          <field name="state" widget="statusbar" statusbar_visible="draft,approve,verify"/>
                         </header>
                  <sheet>
                     <div class="oe_title">
@@ -93,6 +93,7 @@
 
         <menuitem action="cheque_payment_action"
             id="menu_cheque_payment_update_action"
+            web_icon="purchase_request,static/description/cheque.jpg"
             name="Cheque payment request"
             sequence="1"/>      
         

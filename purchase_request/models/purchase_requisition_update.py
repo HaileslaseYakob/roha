@@ -1,5 +1,6 @@
 # Copyright 2018-2019 ForgeFlow, S.L.
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0)
+import datetime
 
 from odoo import _, api, exceptions, fields, models
 
@@ -55,10 +56,14 @@ class ChequePayment(models.Model):
         _description = 'Cheque payment request form'
         _inherit = ['mail.thread', 'mail.activity.mixin']
 
+        @api.model
+        def _get_default_requested_by(self):
+            return self.env["res.users"].browse(self.env.uid)
+
         name = fields.Char(string='Payment reason')
         vendor_id = fields.Many2one('res.partner', 'Pay to')
-        requested_id = fields.Many2one('hr.employee', 'Requested By')
-        verified_id = fields.Many2one('hr.employee', 'Verified By')
+        requested_id = fields.Many2one('res.users', 'Requested By',default=_get_default_requested_by,)
+        verified_id = fields.Many2one('res.users', 'Verified By',readonly='true')
         amount = fields.Float('Amount')
         remark = fields.Char('Remark')
 
@@ -75,6 +80,9 @@ class ChequePayment(models.Model):
 
         def button_approve(self):
             self.write({'state': 'approve'})
+            self.date_requested = datetime.datetime.now()
 
         def button_verify(self):
             self.write({'state': 'verify'})
+            self.verified_id=self.env["res.users"].browse(self.env.uid)
+            self.date_approved = datetime.datetime.now()
